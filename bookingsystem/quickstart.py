@@ -37,36 +37,6 @@ def main():
   try:
     service = build("calendar", "v3", credentials=creds)
 
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + "Z"  # 'Z' indicates UTC time
-    print("Getting the upcoming 7 events")		# I changed the 10 to a 7
-    events_result = (
-        service.events()
-        .list(
-            calendarId="primary",
-            timeMin=now,
-            maxResults=7,				# I had to change this 10 here as well
-            singleEvents=True,
-            orderBy="startTime",
-        )
-        .execute()
-    )
-    events = events_result.get("items", [])
-
-    if not events:
-      print("No upcoming events found.")
-      return
-
-    # Prints the start and name of the next 7 events (changed the 10 to a 7 in this comment)
-    for event in events:
-      start = event["start"].get("dateTime", event["start"].get("date"))
-      print(start, event["summary"])
-
-
-    print()
-    print()
-    print()
-
     # Define the date range for the events
     now = datetime.datetime.utcnow()
     end_date = now + datetime.timedelta(days=2)
@@ -84,6 +54,45 @@ def main():
     for event in events:
         start = event['start'].get('dateTime', event['start'].get('date'))
         print(f'{start} - {event["summary"]}')
+
+
+    # Refer to the Python quickstart on how to setup the environment:
+    # https://developers.google.com/calendar/quickstart/python
+    # Change the scope to 'https://www.googleapis.com/auth/calendar' and delete any
+    # stored credentials.
+
+    event = {
+      'summary': 'Google I/O 2015',
+      'location': '800 Howard St., San Francisco, CA 94103',
+      'description': 'A chance to hear more about Google\'s developer products.',
+      'start': {
+        'dateTime': '2015-05-28T09:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'end': {
+        'dateTime': '2015-05-28T17:00:00-07:00',
+        'timeZone': 'America/Los_Angeles',
+      },
+      'recurrence': [
+        'RRULE:FREQ=DAILY;COUNT=2'
+      ],
+      'attendees': [
+        {'email': 'lpage@example.com'},
+        {'email': 'sbrin@example.com'},
+      ],
+      'reminders': {
+        'useDefault': False,
+        'overrides': [
+          {'method': 'email', 'minutes': 24 * 60},
+          {'method': 'popup', 'minutes': 10},
+        ],
+      },
+    }
+
+    event = service.events().insert(calendarId='primary', body=event).execute()
+    print('Event created: %s') % (event.get('htmlLink'))
+
+
 
 
   except HttpError as error:
