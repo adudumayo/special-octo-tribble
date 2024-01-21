@@ -8,7 +8,7 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 # If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/calendar"]
+SCOPES = ["https://www.googleapis.com/auth/calendar.readonly"]
 
 
 def main():
@@ -88,9 +88,10 @@ def main():
         ],
       },
     }
-
     event = service.events().insert(calendarId='primary', body=event).execute()
     print('Event created: %s') % (event.get('htmlLink'))
+
+    
 
 
 
